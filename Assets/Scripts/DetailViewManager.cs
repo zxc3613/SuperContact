@@ -30,7 +30,7 @@ public class DetailViewManager : ViewManager
     [SerializeField] InputField phoneNumberInputField;
     [SerializeField] InputField emailInputField;
     [SerializeField] Button saveButton;
-    [SerializeField] GameObject thirdViewPrefab;
+    [SerializeField] Image detailProfliePhoto;
 
     public delegate void DetailViewManagerSaveDelegate(Contact contact);
     public DetailViewManagerSaveDelegate saveDelegate;
@@ -39,6 +39,11 @@ public class DetailViewManager : ViewManager
 
     bool editMode = true;
 
+    public Sprite detailProfilePhotoSprite
+    {
+        get { return this.detailProfliePhoto.sprite; }
+        set { this.detailProfliePhoto.sprite = value; }
+    }
     void ToggleEditMode(bool updateInputField=false)
     {
         editMode = !editMode;

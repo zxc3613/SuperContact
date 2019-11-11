@@ -162,6 +162,7 @@ public class ScrollViewManager : ViewManager, ICell
 
             Contact selectedContact = contacts.Value.contactList[cellIndex];
             detailViewManager.contact = selectedContact;
+            detailViewManager.detailProfilePhotoSprite = SpriteManager.GetSprite(selectedContact.profliePhotoFileName);
 
             detailViewManager.saveDelegate = (newContact) =>
             {

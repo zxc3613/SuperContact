@@ -165,6 +165,7 @@ MonoBehaviour:
   saveButton: {fileID: 1697692653100115398}
   thirdViewPrefab: {fileID: 893227375399353740, guid: f758a5c2eb1d23844b62ffe4ea394592,
     type: 3}
+  detailProfliePhoto: {fileID: 7853267191148412353}
 --- !u!95 &1866633052749566467
 Animator:
   serializedVersion: 3
