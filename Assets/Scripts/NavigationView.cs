@@ -10,9 +10,7 @@ public class NavigationView : MonoBehaviour
     [SerializeField] RectTransform rightButtonArea;
     [SerializeField] GameObject backButton;
     [SerializeField] MainManager mainManager;
-  
 
-    Cell cell;
     // Navigation View의 가운데 Text 값을 변경하는 속성
     public string Title
     {
@@ -26,9 +24,8 @@ public class NavigationView : MonoBehaviour
         }
     }
 
-    public void Start()
+    private void Start()
     {
-
         backButton.GetComponent<Button>().onClick.AddListener(() =>
         {
             mainManager.DismissViewManager();
@@ -56,5 +53,4 @@ public class NavigationView : MonoBehaviour
     {
         backButton.SetActive(isShow);
     }
-
 }

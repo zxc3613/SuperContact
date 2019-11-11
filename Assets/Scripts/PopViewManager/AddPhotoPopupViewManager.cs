@@ -2,68 +2,47 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-public interface IAddphotoPopupViewManager
-{
-    void DidSelectAddPhoto(AddPhotoPopupViewManager addPhotoPopupViewManager);
-}
-public class AddPhotoPopupViewManager : PopupViewManager, IPhotoImage
-{
-    public IAddphotoPopupViewManager addphotoPopupDelegate;
-    Sprite[] sprites;
-    [SerializeField] Image imagePrefab;
-    [SerializeField] RectTransform content;
-    float imageHeight = 550;
+using System;
 
-    public List<Sprite> spritestList = new List<Sprite>();
-    public List<PhotoImage> spritestLi = new List<PhotoImage>();
+public class AddPhotoPopupViewManager : PopupViewManager
+{
+    [SerializeField] ScrollRect scrollRect;
+    [SerializeField] GridLayoutGroup gridLayoutGroup;
+    [SerializeField] GameObject baseImageCell;
 
-    protected override void Awake()
-    {
+
+    public Action<Sprite> didSelectImage;
+    protected override void Awake() {
         base.Awake();
-        sprites = Resources.LoadAll<Sprite>("photo");
-        
-        Debug.Log(sprites);
 
-        AddImage();
-        AddContent();
+        Sprite[] sprites = SpriteManager.Load();
+        MakeImageCell(sprites);
+
+        //baseImageCell 비활성화
+        baseImageCell.SetActive(false);
     }
-    public void AddImage()
+
+    private void MakeImageCell(Sprite[] sprites)
     {
-        for (int i = 0; i < sprites.Length; i++)
+        //float cellHeight = (셀 Y 사이즈 + spacing.y) * (이미지 수 /3) + Top padding + botton
+        float cellHright = (gridLayoutGroup.cellSize.y + gridLayoutGroup.spacing.y) * 
+            (sprites.Length / gridLayoutGroup.constraintCount) + 
+            gridLayoutGroup.padding.top + 
+            gridLayoutGroup.padding.bottom;
+        scrollRect.content.sizeDelta = new Vector2(0, cellHright);
+        foreach (Sprite sprite in sprites)
         {
-            PhotoImage photoImage = Instantiate(imagePrefab, content).GetComponent<PhotoImage>();
-            photoImage.GetComponent<Image>().sprite = sprites[i];
-            photoImage.photoDelegates = this;
-            spritestList.Add(sprites[i]);
-            spritestLi.Add(photoImage);
-        }
-    }
-    public void AddContent()
-    {
-        if (sprites.Length > 0)
-        {
-            content.sizeDelta = new Vector2(0, spritestList.Count * imageHeight);
-        }
-        else
-        {
-            content.sizeDelta = Vector2.zero;
+            ImageCell imageCell = Instantiate(baseImageCell, scrollRect.content).GetComponent<ImageCell>();
+            imageCell.SetImageCell(sprite, (selectsprite) =>
+            {
+                didSelectImage?.Invoke(selectsprite);
+                Close();
+            });
         }
     }
 
     public void OnClickClose()
     {
         Close();
-    }
-    [HideInInspector] public int h;
-    public void DidSelectPhoto(PhotoImage photoImage)
-    {
-        //AddPopupViewManager addPopupViewManager = GameObject.Find("Add Popup View(Clone)").GetComponent<AddPopupViewManager>();
-        //int photoIndex = spritestList.IndexOf(photoImage);
-        h = spritestLi.IndexOf(photoImage);
-        //addPopupViewManager.profileImage.sprite = spritestList[photoIndex].GetComponent<Sprite>();
-
-        addphotoPopupDelegate.DidSelectAddPhoto(this);
-        Close();
-
     }
 }

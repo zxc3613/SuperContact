@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ScrollViewManager : ViewManager, ICell //ICellPopupViewManagerDelegate
+public class ScrollViewManager : ViewManager, ICell
 {
     [SerializeField] GameObject cellPrefab;
     [SerializeField] GameObject addPopupViewPrefab;
     [SerializeField] GameObject detailViewPrefab;
-    [SerializeField] GameObject cellPopupViewPrefab;
+    [SerializeField] GameObject confirmPopupViewPrefab;
 
     [SerializeField] RectTransform content;
 
@@ -17,7 +16,7 @@ public class ScrollViewManager : ViewManager, ICell //ICellPopupViewManagerDeleg
     float cellHeight = 240f;
     Contacts? contacts;
 
-    //Cell 편집 버튼 관련 변수
+    // Cell 편집 버튼 관련 변수
     bool isEditable = false;
 
     private void Awake() 
@@ -38,16 +37,18 @@ public class ScrollViewManager : ViewManager, ICell //ICellPopupViewManagerDeleg
             addPopupViewManager.addContactCallback = (contact) =>
             {
                 AddContact(contact);
-                AddCell(contact, contacts.Value.contactList.Count);
+                // AddCell(contact, contacts.Value.contactList.Count - 1);
 
                 ClearCell();
                 LoadData();
+                
             };
 
             // AddPopupViewManager 열기
             addPopupViewManager.Open();
         });
 
+        // 왼쪽 버튼 (Edit: 셀을 삭제할 수 있는 기능)
         leftNavgationViewButton = Instantiate(buttonPrefab).GetComponent<SCButton>();
         leftNavgationViewButton.SetTitle((isEditable) ? "완료" : "편집");
         leftNavgationViewButton.SetOnClickAction(() =>
@@ -70,19 +71,12 @@ public class ScrollViewManager : ViewManager, ICell //ICellPopupViewManagerDeleg
                 {
                     cell.ActiveDelete = false;
                     rightNavgationViewButton.gameObject.SetActive(true);
+
                 }
             }
         });
     }
-    //셀 모두 지우기
-    void ClearCell()
-    {
-        foreach (Cell cell in cellList)
-        {
-            Destroy(cell.gameObject);
-        }
-        cellList.RemoveRange(0, cellList.Count);
-    }
+
     private void Start() 
     {
         contacts = FileManager<Contacts>.Load(Constant.kFileName);
@@ -96,7 +90,9 @@ public class ScrollViewManager : ViewManager, ICell //ICellPopupViewManagerDeleg
         {
             Contacts contactsValue = contacts.Value;
 
+            // 정렬
             contactsValue.contactList.Sort();
+
             for (int i = 0; i < contactsValue.contactList.Count; i++)
             {
                 AddCell(contactsValue.contactList[i], i);
@@ -109,6 +105,7 @@ public class ScrollViewManager : ViewManager, ICell //ICellPopupViewManagerDeleg
     {
         Cell cell = Instantiate(cellPrefab, content).GetComponent<Cell>();
         cell.Title = contact.name;
+        cell.profliePhotoSprite = SpriteManager.GetSprite(contact.profliePhotoFileName);
         cell.cellDelegate = this;
         cellList.Add(cell);
 
@@ -156,7 +153,6 @@ public class ScrollViewManager : ViewManager, ICell //ICellPopupViewManagerDeleg
     // Cell이 터치 되었을때 호출하는 함수
     public void DidSelectCell(Cell cell)
     {
-        //어떤 Cell이 선택되었는지 확인 후 Cell과 관련된 Detail 화면 표시
         if (contacts.HasValue)
         {
             int cellIndex = cellList.IndexOf(cell);
@@ -169,43 +165,45 @@ public class ScrollViewManager : ViewManager, ICell //ICellPopupViewManagerDeleg
 
             detailViewManager.saveDelegate = (newContact) =>
             {
-                //전체 연락처 정보를 가지고 있는 contacts 변수에 있는 예전 정보를 newContact 정보로 바꿔줘야함.
-                //contacts.contacts << newContact를 추가해야함.
-
                 contacts.Value.contactList[cellIndex] = newContact;
+                
                 cell.Title = newContact.name;
+
+                //ClearCell();
+                //LoadData();
             };
+
             mainManager.PresentViewManager(detailViewManager);
         }
     }
-    //Cell의 버튼이 터치 되었을때 호출하는 함수
+
+    void ClearCell()
+    {
+        foreach (Cell cell in cellList)
+        {
+            Destroy(cell.gameObject);
+        }
+        cellList.RemoveRange(0, cellList.Count);
+    }
+
     public void DidSelectDeleteCell(Cell cell)
     {
-        //Cell Object 삭제 <- 눈이 보이는 항목
-        //Contacts에 있는 contactList에서 contact 정보를 삭제 <- 데이터
-
-        //팝업창 띄우기
         if (contacts.HasValue)
         {
-            CellPopupView cellPopupView = Instantiate(cellPopupViewPrefab, mainManager.transform).GetComponent<CellPopupView>();
-            //삭제할때 쓰는 코드  델리게이트 방식
-            cellPopupView.cellPopupViewManagerDelegate = () =>
-            {
-                int cellIndex = cellList.IndexOf(cell);
+            ConfirmPopupViewManager confirmPopupViewManager 
+                = Instantiate(confirmPopupViewPrefab, mainManager.transform)
+                    .GetComponent<ConfirmPopupViewManager>();
 
+            confirmPopupViewManager.confirmPopupViewManagerDelegate = () => {
+                int cellIndex = cellList.IndexOf(cell);
                 List<Contact> contactList = contacts.Value.contactList;
                 contactList.RemoveAt(cellIndex);
                 cellList.RemoveAt(cellIndex);
                 Destroy(cell.gameObject);
-
                 AdjustContent();
             };
-
-            cellPopupView.Open();
+            
+            confirmPopupViewManager.Open();
         }
     }
-
 }
-
-
-

@@ -4,18 +4,29 @@ using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.UI;
 
-
-public class AddPopupViewManager : PopupViewManager, IAddphotoPopupViewManager
+public class AddPopupViewManager : PopupViewManager
 {
     [SerializeField] InputField nameInputField;
     [SerializeField] InputField phoneNumberInputField;
     [SerializeField] InputField emailInputField;
-    [SerializeField] Image profileImage;
+    [SerializeField] Image profilePgotoImage;
 
     [SerializeField] GameObject addPhotoPopupViewPrefab;
 
     public delegate void AddContact(Contact contact);
     public AddContact addContactCallback;
+
+    public void OnClickAddPhoto()
+    {
+        AddPhotoPopupViewManager addPhotoPopupViewManager 
+            = Instantiate(addPhotoPopupViewPrefab, transform.parent).GetComponent<AddPhotoPopupViewManager>();
+
+        addPhotoPopupViewManager.Open(AnimationType.TYPE2);
+        addPhotoPopupViewManager.didSelectImage = (sprite) =>
+        {
+            profilePgotoImage.sprite = sprite;
+        };
+    }
 
     protected override void Awake()
     {
@@ -60,10 +71,13 @@ public class AddPopupViewManager : PopupViewManager, IAddphotoPopupViewManager
 
         if (isValid)
         {
-            Contact contact;
+            Contact contact = new Contact();
             contact.name = name;
             contact.phoneNumber = phoneNumber;
             contact.email = email;
+
+            if (profilePgotoImage.sprite)
+                contact.profliePhotoFileName = profilePgotoImage.sprite.name;
 
             // Main 화면에 Contact 객체 전달
             addContactCallback(contact);
@@ -96,36 +110,4 @@ public class AddPopupViewManager : PopupViewManager, IAddphotoPopupViewManager
         inputField.text = "";
         inputField.image.color = Color.white;
     }
-    
-    public void On()
-    {
-        AddPhotoPopupViewManager addPhotoPopupViewManager = Instantiate(addPhotoPopupViewPrefab, transform.parent).GetComponent<AddPhotoPopupViewManager>();
-        addPhotoPopupViewManager.addphotoPopupDelegate = this;
-        addPhotoPopupViewManager.Open();
-    }
-
-    public void DidSelectAddPhoto(AddPhotoPopupViewManager addPhotoPopupViewManager)
-    {
-        int i = addPhotoPopupViewManager.h;
-
-        Sprite s = addPhotoPopupViewManager.spritestList[i];
-
-        profileImage.sprite = addPhotoPopupViewManager.spritestList[i];
-    }
-
-
-    //public void DidSelectPhoto(PhotoImage photoImage)
-    //{
-
-    //    AddPhotoPopupViewManager addPhotoPopupViewManager =
-    //        Instantiate(addPhotoPopupViewPrefab, transform.parent).GetComponent<AddPhotoPopupViewManager>();
-
-    //    int photoIndex = addPhotoPopupViewManager.spritestList.IndexOf(photoImage);
-
-    //    addPhotoPopupViewManager.photoDelegate = () =>
-    //    {
-
-    //    };
-    //    addPhotoPopupViewManager.Open();
-    //}
 }

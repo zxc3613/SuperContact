@@ -7,25 +7,24 @@ using UnityEngine.UI;
 public class ViewManager : MonoBehaviour
 {
     [SerializeField] protected GameObject buttonPrefab;
-
     [HideInInspector] public string title;                        // Navigation View에 표시할 타이틀
     [HideInInspector] public SCButton leftNavgationViewButton;    // Navigation View 왼쪽에 표시할 버튼
     [HideInInspector] public SCButton rightNavgationViewButton;   // Navigation View 오른쪽에 표시할 버튼
-
     [HideInInspector] public MainManager mainManager;
 
     Animator animator;
 
-    public void On(bool isAnimated = false)
+    public void Close()
+    {
+        GetComponent<Animator>().SetTrigger(Constant.kViewManagerClose);
+    }
+
+    public void Open(bool isAnimated=false)
     {
         if (isAnimated)
         {
-            GetComponent<Animator>().SetTrigger(Constant.KViewManagerON);
+           GetComponent<Animator>().SetTrigger(Constant.kViewManagerOpen);
         }
-    }
-    public void Off()
-    {
-        GetComponent<Animator>().SetTrigger(Constant.KViewManagerOFF);
     }
 
     public void DestroyViewManager()

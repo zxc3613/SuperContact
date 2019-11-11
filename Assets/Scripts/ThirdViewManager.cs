@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class ThirdViewManager : ViewManager
 {
-    private void Awake()
-    {
-        title = "3번째 화면";
+    private void Awake() {
+        title = "세번째 화면";
     }
 }

@@ -13,8 +13,10 @@ public class Cell : MonoBehaviour
 {
     [SerializeField] Text title;
     [SerializeField] Button deleteButton;
-    Button cellButton;
+    [SerializeField] Image profliePhoto;
+
     public ICell cellDelegate;
+    Button cellButton;
 
     public string Title
     {
@@ -28,21 +30,23 @@ public class Cell : MonoBehaviour
             this.title.text = value;
         }
     }
-    private void Start()
-    {
-        //셀의 삭제버튼 안보이게 함
-        cellButton = GetComponent<Button>();
-        this.ActiveDelete = false;
-        
-    }
 
-    //셀의 삭제버튼 안보이게 하는 프러퍼티
+    public Sprite profliePhotoSprite
+    {
+        get { return this.profliePhoto.sprite; }
+        set { this.profliePhoto.sprite = value; }
+    }
     public bool ActiveDelete
     {
-        get { return deleteButton.gameObject.activeSelf; }
-        set { deleteButton.gameObject.SetActive(value); 
-        
-            if(value)
+        get 
+        {
+            return deleteButton.gameObject.activeSelf;
+        }
+        set
+        {
+            deleteButton.gameObject.SetActive(value);
+
+            if (value)
             {
                 cellButton.interactable = false;
             }
@@ -50,26 +54,24 @@ public class Cell : MonoBehaviour
             {
                 cellButton.interactable = true;
             }
+
+//            cellButton.interactable = !value;
         }
     }
+
+    private void Start() 
+    {
+        cellButton = GetComponent<Button>();
+        this.ActiveDelete = false;
+    }
+
     public void OnClick()
     {
-        //해당 셀 정보 보기
         cellDelegate.DidSelectCell(this);
     }
 
     public void OnClickDelete()
     {
-        //해당 셀 지우기
         cellDelegate.DidSelectDeleteCell(this);
     }
-
-    //public void ButtonOn()
-    //{
-    //    cellButton.interactable = true;
-    //}
-    //public void ButtonOff()
-    //{
-    //    cellButton.interactable = false;
-    //}
 }
