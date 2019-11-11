@@ -30,9 +30,8 @@ public class DetailViewManager : ViewManager
     [SerializeField] InputField nameInputField;
     [SerializeField] InputField phoneNumberInputField;
     [SerializeField] InputField emailInputField;
+    [SerializeField] ImageButton profilePhotoImageButton;
     [SerializeField] Button saveButton;
-    [SerializeField] Image detailProfliePhoto;
-    [SerializeField] GameObject addPhotoPopupViewPrefab;
 
     public delegate void DetailViewManagerSaveDelegate(Contact contact);
     public DetailViewManagerSaveDelegate saveDelegate;
@@ -41,11 +40,6 @@ public class DetailViewManager : ViewManager
 
     bool editMode = true;
 
-    public Sprite detailProfilePhotoSprite
-    {
-        get { return this.detailProfliePhoto.sprite; }
-        set { this.detailProfliePhoto.sprite = value; }
-    }
     void ToggleEditMode(bool updateInputField=false)
     {
         editMode = !editMode;
@@ -57,6 +51,7 @@ public class DetailViewManager : ViewManager
         phoneNumberInputField.SetImmutable(editMode);
         emailInputField.SetImmutable(editMode);
 
+        profilePhotoImageButton.Editable = editMode;
         if (editMode)
         {
             rightNavgationViewButton.SetTitle("취소");
@@ -72,6 +67,9 @@ public class DetailViewManager : ViewManager
                 nameInputField.text = contactValue.name;
                 phoneNumberInputField.text = contactValue.phoneNumber;
                 emailInputField.text = contactValue.email;
+
+                //상세화면에 사진 출력
+                profilePhotoImageButton.Image = SpriteManager.GetSprite(contactValue.profliePhotoFileName);
             }
         }
     }
@@ -110,27 +108,10 @@ public class DetailViewManager : ViewManager
         newContact.name = nameInputField.text;
         newContact.phoneNumber = phoneNumberInputField.text;
         newContact.email = emailInputField.text;
+        newContact.profliePhotoFileName = profilePhotoImageButton.Image.name;
 
         saveDelegate?.Invoke(newContact);
 
         ToggleEditMode(true);
-    }
-
-    public void ProfileSave()
-    {
-        AddPhotoPopupViewManager addPhotoPopupViewManager
-            = Instantiate(addPhotoPopupViewPrefab, transform.parent).GetComponent<AddPhotoPopupViewManager>();
-        addPhotoPopupViewManager.Open(PopupViewManager.AnimationType.TYPE2);
-        addPhotoPopupViewManager.didSelectImage = (sprite) =>
-        {
-            detailProfliePhoto.sprite = sprite;
-        };
-        //Contact contact = new Contact();
-        //if (detailProfliePhoto.sprite)
-        //    contact.profliePhotoFileName = detailProfliePhoto.sprite.name;
-        //else
-        //    contact.profliePhotoFileName = "NoProfile";
-
-        //addContactCallback(contact);
     }
 }
