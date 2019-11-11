@@ -50,5 +50,6 @@ public class PopupViewManager : MonoBehaviour
     public void SetDisablePanel()
     {
         gameObject.SetActive(false);
+        Destroy(gameObject);
     }
 }

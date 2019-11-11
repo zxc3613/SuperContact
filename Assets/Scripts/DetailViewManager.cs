@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -31,6 +32,7 @@ public class DetailViewManager : ViewManager
     [SerializeField] InputField emailInputField;
     [SerializeField] Button saveButton;
     [SerializeField] Image detailProfliePhoto;
+    [SerializeField] GameObject addPhotoPopupViewPrefab;
 
     public delegate void DetailViewManagerSaveDelegate(Contact contact);
     public DetailViewManagerSaveDelegate saveDelegate;
@@ -112,5 +114,23 @@ public class DetailViewManager : ViewManager
         saveDelegate?.Invoke(newContact);
 
         ToggleEditMode(true);
+    }
+
+    public void ProfileSave()
+    {
+        AddPhotoPopupViewManager addPhotoPopupViewManager
+            = Instantiate(addPhotoPopupViewPrefab, transform.parent).GetComponent<AddPhotoPopupViewManager>();
+        addPhotoPopupViewManager.Open(PopupViewManager.AnimationType.TYPE2);
+        addPhotoPopupViewManager.didSelectImage = (sprite) =>
+        {
+            detailProfliePhoto.sprite = sprite;
+        };
+        //Contact contact = new Contact();
+        //if (detailProfliePhoto.sprite)
+        //    contact.profliePhotoFileName = detailProfliePhoto.sprite.name;
+        //else
+        //    contact.profliePhotoFileName = "NoProfile";
+
+        //addContactCallback(contact);
     }
 }
