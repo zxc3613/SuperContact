@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class PagingManager : MonoBehaviour, IBeginDragHandler, IEndDragHandler
 {
     ScrollRect cachedScrollRect;
+    Coroutine moveCoroutine;
 
     public ScrollRect CachedScrollRect
     {
@@ -22,7 +23,7 @@ public class PagingManager : MonoBehaviour, IBeginDragHandler, IEndDragHandler
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        StopAllCoroutines();
+        if (moveCoroutine != null) StopCoroutine(moveCoroutine);
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -39,7 +40,7 @@ public class PagingManager : MonoBehaviour, IBeginDragHandler, IEndDragHandler
         float targetX = pageIndex * pageWidth;
         if (pageIndex >= 0 && pageIndex <= gridLayoutGroup.transform.childCount -1)
         {
-            StartCoroutine(MoveCell(new Vector2(targetX, 0), 0.5f));
+            moveCoroutine = StartCoroutine(MoveCell(new Vector2(targetX, 0), 0.5f));
         }
 
     }
