@@ -316,7 +316,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c5f82437a497b34d964eb9f8399e387, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cell: {fileID: 4243127662207908645, guid: d60b7392640fb0e4787647553d03844f, type: 3}
+  animationType: 0
 --- !u!1 &2673087480756996006
 GameObject:
   m_ObjectHideFlags: 0
@@ -646,7 +646,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.15018693, g: 0.44642913, b: 0.7075472, a: 1}
+  m_Color: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
